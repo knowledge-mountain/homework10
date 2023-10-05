@@ -1,0 +1,6 @@
+api:
+  host: https://api.nasa.gov
+  path:
+    mars: /mars-photos/api/v1/rovers/curiosity/photos
+    planetary: /planetary/apod
+  key: hKfg7MJKtyIf7kiPZ6fHrlkw7yKh3BRZQdLgHxBR
