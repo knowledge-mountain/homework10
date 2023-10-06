@@ -11,8 +11,8 @@
     <groupId>com.basbase</groupId>
     <artifactId>homework10</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>homework10</name>
-    <description>homework10</description>
+    <name>nasa-pictures</name>
+    <description>Api for working with nasa's photos in general</description>
     <properties>
         <java.version>17</java.version>
     </properties>
@@ -35,19 +35,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
-<!--            <version>3.1.2</version>-->
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
             <version>3.6.1</version>
         </dependency>
-
-        <!--        <dependency>-->
-<!--            <groupId>io.projectreactor.netty</groupId>-->
-<!--            <artifactId>reactor-netty</artifactId>-->
-<!--            <version>1.1.11</version>-->
-<!--        </dependency>-->
     </dependencies>
 
     <build>
