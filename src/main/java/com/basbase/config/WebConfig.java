@@ -10,7 +10,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
@@ -21,8 +20,8 @@ public class WebConfig {
                 .codecs(conf -> conf.defaultCodecs().maxInMemorySize(16 * 1024 * 1024))
                 .clientConnector(new ReactorClientHttpConnector(HttpClient.create()
                         .followRedirect(true)
-                        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1)
-                        .responseTimeout(Duration.of(1, ChronoUnit.NANOS))
+                        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
+                        .responseTimeout(Duration.ofMillis(5000))
                         .doOnConnected(connection -> connection
                                 .addHandlerLast(new ReadTimeoutHandler(5, TimeUnit.SECONDS))
                                 .addHandlerLast(new WriteTimeoutHandler(5, TimeUnit.SECONDS))))).build();
