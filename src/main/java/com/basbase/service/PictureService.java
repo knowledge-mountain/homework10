@@ -11,7 +11,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Comparator;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,28 +27,6 @@ public class PictureService {
     private final WebClient webClient;
 
     public ResponseEntity<byte[]> getLargestPicture(int sol) {
-        return getLargestPictureInfo(sol)
-                .map(Pair::second)
-                .map(this::get)
-                .orElseThrow();
-    }
-
-    public ResponseEntity<byte[]> getPictureOfTheDay() {
-        return webClient.get()
-                .uri(host, b -> b.path(planetary)
-                        .queryParam("api_key", apiKey)
-                        .build())
-                .retrieve()
-                .bodyToMono(JsonNode.class)
-                .map(node -> node.findValuesAsText("hdurl"))
-                .flatMapMany(Flux::fromIterable)
-                .flatMap(url -> webClient.get()
-                        .uri(url)
-                        .exchangeToMono(resp -> resp.toEntity(byte[].class))
-                ).blockFirst();
-    }
-
-    private Optional<Pair> getLargestPictureInfo(int sol) {
         return webClient.get()
                 .uri(host, b -> b.path(mars)
                         .queryParam("sol", sol)
@@ -62,7 +39,24 @@ public class PictureService {
                 .flatMap(this::head)
                 .collectList()
                 .blockOptional()
-                .flatMap(pairs -> pairs.stream().max(Comparator.comparing(Pair::first)));
+                .flatMap(pairs -> pairs.stream().max(Comparator.comparing(Pair::first)))
+                .map(Pair::second)
+                .map(this::get)
+                .orElseThrow()
+                .block();
+    }
+
+    public ResponseEntity<byte[]> getPictureOfTheDay() {
+        return webClient.get()
+                .uri(host, b -> b.path(planetary)
+                        .queryParam("api_key", apiKey)
+                        .build())
+                .retrieve()
+                .bodyToMono(JsonNode.class)
+                .map(node -> node.findValuesAsText("hdurl"))
+                .flatMapMany(Flux::fromIterable)
+                .flatMap(this::get)
+                .blockFirst();
     }
 
     private Mono<Pair> head(String url) {
@@ -73,11 +67,10 @@ public class PictureService {
                 .map(re -> new Pair(re.getHeaders().getContentLength(), url));
     }
 
-    private ResponseEntity<byte[]> get(String url) {
+    private Mono<ResponseEntity<byte[]>> get(String url) {
         return webClient.get()
                 .uri(url)
                 .retrieve()
-                .toEntity(byte[].class)
-                .block();
+                .toEntity(byte[].class);
     }
 }
